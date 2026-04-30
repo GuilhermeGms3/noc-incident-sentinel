@@ -1,0 +1,14 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: noc-webhook
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 2h
+
+receivers:
+  - name: noc-webhook
+    webhook_configs:
+      - url: http://100.102.45.127:5678/webhook/noc-alert
+        send_resolved: true

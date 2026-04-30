@@ -1,0 +1,20 @@
+groups:
+  - name: noc_incidents
+    rules:
+      - alert: ServiceDown
+        expr: noc_target_up == 0
+        for: 1m
+        labels:
+          severity: P1
+        annotations:
+          summary: "Target down: {{ $labels.target_name }}"
+          description: "{{ $labels.target_name }} is down ({{ $labels.target }})"
+
+      - alert: HighLatency
+        expr: noc_target_latency_ms > 1500
+        for: 2m
+        labels:
+          severity: P2
+        annotations:
+          summary: "High latency: {{ $labels.target_name }}"
+          description: "Latency above threshold on {{ $labels.target_name }} ({{ $value }} ms)"
