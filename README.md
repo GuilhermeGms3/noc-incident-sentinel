@@ -47,9 +47,15 @@ targets:
 3. Alertmanager sends webhook payload to N8N.
 4. N8N routes notifications/escalation.
 
+## NOC Operations
+
+- Operational status endpoint: `GET /status`
+- Grafana import dashboard: `docs/grafana-dashboard.json`
+- Incident response runbook: `docs/runbook.md`
+
 ## Next steps
 
 - Add ICMP/ping probes and maintenance windows.
-- Add maintenance windows and silences.
+- Add alert silencing windows by schedule.
 - Add runbook links per alert.
 
