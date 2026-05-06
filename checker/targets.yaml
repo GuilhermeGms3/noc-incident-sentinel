@@ -3,18 +3,22 @@ targets:
     type: http
     target: http://100.102.45.127:5678
     timeout_seconds: 5
+    retries: 2
 
   - name: proxy-ssh
     type: tcp
     target: 100.72.95.93:22
     timeout_seconds: 5
+    retries: 2
 
   - name: grafana
     type: http
     target: http://100.102.126.60:3001
     timeout_seconds: 5
+    retries: 2
 
   - name: github-dns
     type: dns
     target: github.com
     timeout_seconds: 3
+    retries: 3

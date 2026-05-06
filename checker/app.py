@@ -62,6 +62,27 @@ def target_display_name(ctype: str, target: str) -> str:
     return target
 
 
+def run_single_check(ctype: str, target: str, timeout: int) -> tuple[int, float]:
+    if ctype == 'http':
+        return check_http(target, timeout)
+    if ctype == 'tcp':
+        return check_tcp(target, timeout)
+    if ctype == 'dns':
+        return check_dns(target, timeout)
+    return (0, -1)
+
+
+def check_with_retries(ctype: str, target: str, timeout: int, retries: int) -> tuple[int, float]:
+    attempts = max(1, retries)
+    last_latency = -1.0
+    for _ in range(attempts):
+        up, latency = run_single_check(ctype, target, timeout)
+        last_latency = latency
+        if up == 1:
+            return (up, latency)
+    return (0, last_latency)
+
+
 def run_checks() -> None:
     global LAST_RESULTS
     with open('/app/targets.yaml', 'r', encoding='utf-8') as f:
@@ -73,15 +94,8 @@ def run_checks() -> None:
         ctype = t['type']
         target = t['target']
         timeout = int(t.get('timeout_seconds', 5))
-
-        if ctype == 'http':
-            up, latency = check_http(target, timeout)
-        elif ctype == 'tcp':
-            up, latency = check_tcp(target, timeout)
-        elif ctype == 'dns':
-            up, latency = check_dns(target, timeout)
-        else:
-            up, latency = (0, -1)
+        retries = int(t.get('retries', 2))
+        up, latency = check_with_retries(ctype, target, timeout, retries)
 
         up_metric.labels(target_name=name, target=target, check_type=ctype).set(up)
         latency_metric.labels(target_name=name, target=target, check_type=ctype).set(latency)
@@ -92,6 +106,7 @@ def run_checks() -> None:
                 'target': target,
                 'target_display': target_display_name(ctype, target),
                 'check_type': ctype,
+                'retries': retries,
                 'up': bool(up),
                 'latency_ms': round(latency, 2),
             }
