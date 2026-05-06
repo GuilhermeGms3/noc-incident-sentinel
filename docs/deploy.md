@@ -19,6 +19,7 @@ docker compose up -d --build
 
 ```bash
 curl http://localhost:9115/health
+curl http://localhost:9115/status
 curl http://localhost:9115/metrics | head
 curl http://localhost:9091/-/healthy
 curl http://localhost:9093/-/healthy

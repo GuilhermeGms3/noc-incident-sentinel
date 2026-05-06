@@ -11,10 +11,19 @@ groups:
           description: "{{ $labels.target_name }} is down ({{ $labels.target }})"
 
       - alert: HighLatency
-        expr: noc_target_latency_ms > 1500
+        expr: noc_target_latency_ms{check_type=~"http|tcp"} > 1500
         for: 2m
         labels:
           severity: P2
         annotations:
           summary: "High latency: {{ $labels.target_name }}"
           description: "Latency above threshold on {{ $labels.target_name }} ({{ $value }} ms)"
+
+      - alert: DnsSlowResponse
+        expr: noc_target_latency_ms{check_type="dns"} > 800
+        for: 2m
+        labels:
+          severity: P3
+        annotations:
+          summary: "DNS slow response: {{ $labels.target_name }}"
+          description: "DNS lookup latency is high on {{ $labels.target_name }} ({{ $value }} ms)"

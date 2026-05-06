@@ -4,7 +4,7 @@ Lightweight NOC incident orchestration layer on top of Prometheus + Grafana.
 
 ## What it does
 
-- Probes critical services (HTTP/port checks).
+- Probes critical services (HTTP, TCP and DNS checks).
 - Exposes metrics for Prometheus scraping.
 - Applies alert rules for downtime and high latency.
 - Routes incidents to webhooks (N8N/Telegram/Slack).
@@ -24,7 +24,7 @@ docker compose up -d
 
 Services:
 
-- Checker API: `http://localhost:9115/metrics`
+- Checker API: `http://localhost:9115/metrics` and `http://localhost:9115/status`
 - Prometheus: `http://localhost:9091`
 - Alertmanager: `http://localhost:9093`
 
@@ -49,6 +49,7 @@ targets:
 
 ## Next steps
 
-- Add ping + DNS probes.
+- Add ICMP/ping probes and maintenance windows.
 - Add maintenance windows and silences.
 - Add runbook links per alert.
+

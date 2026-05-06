@@ -13,3 +13,8 @@ targets:
     type: http
     target: http://100.102.126.60:3001
     timeout_seconds: 5
+
+  - name: github-dns
+    type: dns
+    target: github.com
+    timeout_seconds: 3
