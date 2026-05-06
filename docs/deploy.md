@@ -29,6 +29,7 @@ curl http://localhost:9093/-/healthy
 
 - Add Prometheus data source: `http://<vm-ip>:9091`
 - Build panel with `noc_target_up` and `noc_target_latency_ms`
+- Import ready dashboard from `docs/grafana-dashboard.json`
 
 ## 5) N8N webhook
 
