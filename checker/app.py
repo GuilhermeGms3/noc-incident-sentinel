@@ -11,8 +11,10 @@ app = Flask(__name__)
 up_metric = Gauge('noc_target_up', 'Target availability', ['target_name', 'target', 'check_type'])
 latency_metric = Gauge('noc_target_latency_ms', 'Target latency in ms', ['target_name', 'target', 'check_type'])
 last_check_metric = Gauge('noc_target_last_check_unixtime', 'Last successful check timestamp', ['target_name', 'target', 'check_type'])
+consecutive_failures_metric = Gauge('noc_target_consecutive_failures', 'Consecutive failure count per target', ['target_name', 'target', 'check_type'])
 
 LAST_RESULTS: list[dict] = []
+FAIL_COUNTERS: dict[tuple[str, str, str], int] = {}
 
 
 def check_http(target: str, timeout: int) -> tuple[int, float]:
@@ -100,6 +102,14 @@ def run_checks() -> None:
         up_metric.labels(target_name=name, target=target, check_type=ctype).set(up)
         latency_metric.labels(target_name=name, target=target, check_type=ctype).set(latency)
         last_check_metric.labels(target_name=name, target=target, check_type=ctype).set(time.time())
+        failure_key = (name, target, ctype)
+        if up == 1:
+            FAIL_COUNTERS[failure_key] = 0
+        else:
+            FAIL_COUNTERS[failure_key] = FAIL_COUNTERS.get(failure_key, 0) + 1
+        consecutive_failures_metric.labels(target_name=name, target=target, check_type=ctype).set(
+            FAIL_COUNTERS[failure_key]
+        )
         results.append(
             {
                 'name': name,
@@ -109,6 +119,7 @@ def run_checks() -> None:
                 'retries': retries,
                 'up': bool(up),
                 'latency_ms': round(latency, 2),
+                'consecutive_failures': FAIL_COUNTERS[failure_key],
             }
         )
     LAST_RESULTS = results

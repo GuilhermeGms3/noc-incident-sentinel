@@ -27,3 +27,12 @@ groups:
         annotations:
           summary: "DNS slow response: {{ $labels.target_name }}"
           description: "DNS lookup latency is high on {{ $labels.target_name }} ({{ $value }} ms)"
+
+      - alert: PersistentTargetFailure
+        expr: noc_target_consecutive_failures >= 3
+        for: 30s
+        labels:
+          severity: P1
+        annotations:
+          summary: "Persistent failure: {{ $labels.target_name }}"
+          description: "{{ $labels.target_name }} failed 3+ consecutive checks."
